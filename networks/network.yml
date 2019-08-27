@@ -1,0 +1,25 @@
+- name: animals
+  server: zoo.brandoncsammons.com
+  notes: this app hold all the animals
+  relationships:
+    exports_data_to:
+      - dog
+      - cat
+      - hamster
+    imports_data_from:
+      - wolf
+      - bobcat
+      - turtle
+
+- name: animals2
+  server: zoo.brandoncsammons.com
+  notes: this app hold all the animals
+  relationships:
+    exports_data_to:
+      - bear
+      - bee
+      - lobster
+    imports_data_from:
+      - ant
+      - bear
+      - wasp
