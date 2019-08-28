@@ -1,13 +1,17 @@
-- name: plants
+- name: grass
   server: garden.brandoncsammons.com
   launch_doc: link_to_launch_doc
   notes: this app hold all the plants
   relationships:
     - exports_data_to:
-      - grass
       - trees
       - flowers
     - imports_data_from:
       - flowers
       - dirt
       - trees
+
+- name: trees
+- name: flowers
+- name: dirt
+- name: trees

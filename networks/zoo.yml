@@ -1,4 +1,4 @@
-- name: animals
+- name: elephant
   server: zoo.brandoncsammons.com
   launch_doc: link_to_launch_doc
   notes: this app hold all the animals
@@ -12,7 +12,7 @@
       - bobcat
       - turtle
 
-- name: animals2
+- name: dog
   server: zoo.brandoncsammons.com
   launch_doc: link_to_launch_doc
   notes: this app hold all the animals
@@ -25,3 +25,16 @@
       - ant
       - bear
       - wasp
+
+- name: dog
+- name: cat
+- name: hamster
+- name: wolf
+- name: bobcat
+- name: turtle
+- name: bear
+- name: bee
+- name: lobster
+- name: ant
+- name: bear
+- name: wasp
