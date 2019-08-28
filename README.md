@@ -13,5 +13,5 @@ A simple and human-readable way to load your network diagram into neo4j for visu
 ```
 >irb
 >require "./neo-network-docs.rb"
->NeoNetworkDocs.generate
+>NeoNetworkDocs.load_data
 ```

@@ -3,15 +3,21 @@
   launch_doc: link_to_launch_doc
   notes: this app hold all the plants
   relationships:
-    - exports_data_to:
+    - exports_to:
       - trees
       - flowers
-    - imports_data_from:
+    - imports_from:
       - flowers
       - dirt
       - trees
 
 - name: trees
+  relationships:
+    - exports_to:
+      - grass
+    - syncs_every_hour_to:
+      - grass
+
 - name: flowers
 - name: dirt
 - name: trees

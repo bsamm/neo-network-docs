@@ -10,7 +10,7 @@ end
 require 'neo4j/core/cypher_session/adaptors/http'
 
 class NeoNetworkDocs
-  def self.generate
+  def self.load_data
 
     options = {wrap_level: :proc} # Required to be able to use `Object.property` and `Object.relatedObject
 
@@ -23,29 +23,57 @@ class NeoNetworkDocs
     data.each do |network|
 
       network.each do |app|
-        App.find_or_create_by!(
-          name: app['name']
-        )
+        current_app = App.find_or_initialize_by(name: app['name'])
+        current_app.assign_attributes(server: app['server']) if app['server'].present?
+        current_app.assign_attributes(launch_doc: app['launch_doc']) if app['launch_doc'].present?
+        current_app.assign_attributes(notes: app['notes']) if app['notes'].present?
+        current_app.save
       end
 
       network.each do |app|
+
         source_app = App.find_or_create_by!(name: app['name'])
         if app.key?("relationships")
+
           app['relationships'].each do |rel|
+
             rel_name = rel.keys[0]
-            rel.values[0].each do |target_app_name|
-              target_app = App.find_or_create_by!(name: target_app_name)
-              if rel_name == 'exports_data_to'
-                ExportsDataTo.create(from_node: source_app, to_node: target_app)
-              else
-                ImportsDataFrom.create(from_node: source_app, to_node: target_app)
-              end
+
+            rel_class = Class.new(Object) do
+              include Neo4j::ActiveRel
+
+              from_class :App
+              to_class :App
+
+              type rel_name.upcase
             end
+
+            rel.values[0].each do |target_app_name|
+
+              target_app = App.find_or_create_by!(name: target_app_name)
+              begin
+                custom_class = Object.const_get(rel_name.camelize)
+              rescue NameError
+                custom_class = Object.const_set(rel_name.camelize, rel_class)
+              end
+
+              if rel_name.scan(out_keywords_re).present?
+                custom_class.create(from_node: source_app, to_node: target_app)
+              elsif rel_name.scan(in_keywords_re).present?
+                custom_class.create(from_node: target_app, to_node: source_app)
+              else
+                p "no keywords match. add in/out keywords to config.yml."
+              end
+
+            end
+
           end
         end
       end
 
     end
+
+    return "data loaded successfully"
   end
 
   def self.data
@@ -54,6 +82,18 @@ class NeoNetworkDocs
       data << YAML.load(File.read(yml_file))
     end
     data
+  end
+
+  def self.config
+    YAML.load(File.read('./config.yml'))
+  end
+
+  def self.out_keywords_re
+    Regexp.union(config['out_keywords'])
+  end
+
+  def self.in_keywords_re
+    Regexp.union(config['in_keywords'])
   end
 
   def self.query(cypher_query)
@@ -65,22 +105,8 @@ class App
   include Neo4j::ActiveNode
   include Neo4j::Timestamps
 
-  has_many :out, :exports, model_class: :App, rel_class: :ExportsDataTo
-  has_many :in, :imports, model_class: :App, rel_class: :ImportsDataFrom
-
   property :name, type: String
-end
-
-class ExportsDataTo
-  include Neo4j::ActiveRel
-
-  from_class :App
-  to_class :App
-end
-
-class ImportsDataFrom
-  include Neo4j::ActiveRel
-
-  from_class :App
-  to_class :App
+  property :server, type: String
+  property :launch_doc, type: String
+  property :notes, type: String
 end

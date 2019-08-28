@@ -1,0 +1,9 @@
+out_keywords:
+  - exports
+  - sends
+  - syncs
+in_keywords:
+  - imports
+  - fetches
+  - downloads
+  - pulls

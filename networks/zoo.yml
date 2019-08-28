@@ -3,11 +3,11 @@
   launch_doc: link_to_launch_doc
   notes: this app hold all the animals
   relationships:
-    - exports_data_to:
+    - exports_to:
       - dog
       - cat
       - hamster
-    - imports_data_from:
+    - imports_from:
       - wolf
       - bobcat
       - turtle
@@ -17,16 +17,17 @@
   launch_doc: link_to_launch_doc
   notes: this app hold all the animals
   relationships:
-    - exports_data_to:
+    - exports_to:
       - bear
       - bee
       - lobster
-    - imports_data_from:
+    - exports_every_hour_on_the_hour_to:
       - ant
       - bear
       - wasp
 
 - name: dog
+- name: elephant
 - name: cat
 - name: hamster
 - name: wolf
