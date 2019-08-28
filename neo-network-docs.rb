@@ -35,7 +35,11 @@ class NeoNetworkDocs
             rel_name = rel.keys[0]
             rel.values[0].each do |target_app_name|
               target_app = App.find_or_create_by!(name: target_app_name)
-              ExportsDataTo.create(from_node: source_app, to_node: target_app)
+              if rel_name == 'exports_data_to'
+                ExportsDataTo.create(from_node: source_app, to_node: target_app)
+              else
+                ImportsDataFrom.create(from_node: source_app, to_node: target_app)
+              end
             end
           end
         end
