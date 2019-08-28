@@ -73,7 +73,7 @@ class NeoNetworkDocs
 
     end
 
-    return "data loaded successfully"
+    p "data loaded successfully"
   end
 
   def self.data
