@@ -8,5 +8,5 @@ A simple and human-readable way to load your network diagram into neo4j for visu
 2. Start/stop the db server: `rake neo4j:start` and `rake neo4j:stop`
 3. Go to `http://localhost:7474` to see the neo4j console.
 4. Duplicate the `zoo.yml` file and rename with rename. Also fill in some of the data based on the examples.
-5. Configure your keywords for your relationships in config.yml. Basically, you just defining the direction associated with the names of your relationships.
+5. Configure your keywords for your relationships in `config.yml`. Basically, you just defining the direction associated with the names of your relationships.
 6. Load the data: `rake data_load`
