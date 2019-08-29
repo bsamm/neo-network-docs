@@ -22,7 +22,10 @@ class NeoNetworkDocs
 
     data.each do |network|
 
-      network.each do |app|
+      network_name = network[0].keys[0]
+      network_data = network[0].values[0]
+
+      network_data.each do |app|
         current_app = App.find_or_initialize_by(name: app['name'])
         current_app.assign_attributes(server: app['server']) if app['server'].present?
         current_app.assign_attributes(launch_doc: app['launch_doc']) if app['launch_doc'].present?
@@ -30,7 +33,7 @@ class NeoNetworkDocs
         current_app.save
       end
 
-      network.each do |app|
+      network_data.each do |app|
 
         source_app = App.find_or_create_by!(name: app['name'])
         if app.key?("relationships")
@@ -79,7 +82,7 @@ class NeoNetworkDocs
   def self.data
     data = []
     Dir.glob('./networks/*.yml') do |yml_file|
-      data << YAML.load(File.read(yml_file))
+      data << [File.basename(yml_file, ".*") => YAML.load(File.read(yml_file))]
     end
     data
   end
