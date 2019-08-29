@@ -47,32 +47,32 @@ class NeoNetworkDocs
       end
 
       network_data.each do |app|
-      
+
         source_app = node.find_or_create_by!(name: app['name'])
         if app.key?("relationships")
-      
+
           app['relationships'].each do |rel|
-      
+
             rel_name = rel.keys[0]
-      
+
             rel_class = Class.new(Object) do
               include Neo4j::ActiveRel
-      
+
               from_class :any
               to_class :any
-      
+
               type rel_name.upcase
             end
-      
+
             rel.values[0].each do |target_app_name|
-      
+
               target_app = node.find_or_create_by!(name: target_app_name)
               begin
                 custom_class = Object.const_get(rel_name.camelize)
               rescue NameError
                 custom_class = Object.const_set(rel_name.camelize, rel_class)
               end
-      
+
               if rel_name.scan(out_keywords_re).present?
                 custom_class.create(from_node: source_app, to_node: target_app)
               elsif rel_name.scan(in_keywords_re).present?
@@ -80,9 +80,9 @@ class NeoNetworkDocs
               else
                 p "no keywords match. add in/out keywords to config.yml."
               end
-      
+
             end
-      
+
           end
         end
       end
