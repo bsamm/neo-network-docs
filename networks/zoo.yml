@@ -5,6 +5,7 @@
   relationships:
     - exports_to:
       - grass
+      - dog
       - cat
       - hamster
     - imports_from:

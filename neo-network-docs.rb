@@ -19,6 +19,9 @@ class NeoNetworkDocs
 
     query("MATCH (n) DETACH DELETE n")
 
+    node_names = []
+    data.map { |n| node_names << n[0].keys[0] }
+
     data.each do |network|
 
       network_name = network[0].keys[0]
@@ -66,7 +69,17 @@ class NeoNetworkDocs
 
             rel.values[0].each do |target_app_name|
 
-              target_app = node.find_or_create_by!(name: target_app_name)
+              node_names.each do |n|
+                begin 
+                  target_app = n.camelize.constantize.find_or_initialize_by(name: target_app_name)  
+                rescue NameError
+                  query("CREATE CONSTRAINT ON (n:#{n.camelize}) ASSERT n.uuid IS UNIQUE")
+                  node = Object.const_set(n.camelize, node_class)
+                  target_app = n.camelize.constantize.find_or_create_by!(name: target_app_name)  
+                end
+                @target_app = target_app if target_app.created_at.present?
+              end
+
               begin
                 custom_class = Object.const_get(rel_name.camelize)
               rescue NameError
@@ -74,9 +87,9 @@ class NeoNetworkDocs
               end
 
               if rel_name.scan(out_keywords_re).present?
-                custom_class.create(from_node: source_app, to_node: target_app)
+                custom_class.create(from_node: source_app, to_node: @target_app)
               elsif rel_name.scan(in_keywords_re).present?
-                custom_class.create(from_node: target_app, to_node: source_app)
+                custom_class.create(from_node: @target_app, to_node: source_app)
               else
                 p "no keywords match. add in/out keywords to config.yml."
               end
