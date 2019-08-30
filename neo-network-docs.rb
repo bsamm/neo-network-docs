@@ -58,43 +58,43 @@ class NeoNetworkDocs
   def self.create_all_rels
     data.each do |network|
       network_data = get_network_data(network)
-    
+
       network_data.each do |app|
         source_app = get_node_class(get_network_name(network)).find_or_create_by!(name: app['name'])
         if app.key?("relationships")
-    
+
           app['relationships'].each do |rel|
-    
+
             rel_name = rel.keys[0]
-    
+
             rel_class = Class.new(Object) do
               include Neo4j::ActiveRel
-    
+
               from_class :any
               to_class :any
-    
+
               type rel_name.upcase
             end
-    
+
             rel.values[0].each do |target_app_name|
-    
+
               node_labels.each do |n|
                 begin 
-                  target_app = get_node_class(n).find_or_initialize_by(name: target_app_name)  
+                  target_app = get_node_class(n).find_or_initialize_by(name: target_app_name)
                 rescue NameError
                   query("CREATE CONSTRAINT ON (n:#{n.camelize}) ASSERT n.uuid IS UNIQUE")
                   node = Object.const_set(n.camelize, node_class)
-                  target_app = get_node_class(n).find_or_create_by!(name: target_app_name)  
+                  target_app = get_node_class(n).find_or_create_by!(name: target_app_name)
                 end
                 @target_app = target_app if target_app.created_at.present?
               end
-    
+
               begin
                 custom_class = Object.const_get(rel_name.camelize)
               rescue NameError
                 custom_class = Object.const_set(rel_name.camelize, rel_class)
               end
-    
+
               if rel_name.scan(out_keywords_re).present?
                 custom_class.create(from_node: source_app, to_node: @target_app)
               elsif rel_name.scan(in_keywords_re).present?
@@ -102,13 +102,13 @@ class NeoNetworkDocs
               else
                 p "no keywords match. add in/out keywords to config.yml."
               end
-    
+
             end
-    
+
           end
         end
       end
-    
+
     end
   end
 
