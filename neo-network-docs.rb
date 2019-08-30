@@ -26,12 +26,6 @@ class NeoNetworkDocs
     query("MATCH (n) DETACH DELETE n")
   end
 
-  def self.node_names
-    node_names = []
-    data.map { |n| node_names << n[0].keys[0] }
-    node_names
-  end
-
   def self.create_all_nodes
     data.each do |network|
       network_name = get_network_name(network)
@@ -140,6 +134,12 @@ class NeoNetworkDocs
 
   def self.query(cypher_query)
     Neo4j::ActiveBase.current_session.query(cypher_query)
+  end
+
+  def self.node_names
+    node_names = []
+    data.map { |n| node_names << n[0].keys[0] }
+    node_names
   end
 
   def self.get_network_name(network)
