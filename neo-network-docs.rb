@@ -98,7 +98,7 @@ class NeoNetworkDocs
               elsif rel_name.scan(in_keywords_re).present?
                 custom_class.create(from_node: @target_app, to_node: source_app)
               else
-                p "no keywords match. add in/out keywords to config.yml."
+                p "no keywords match. add '#{rel_name}' to out_keywords or in_keywords in config.yml."
               end
 
             end

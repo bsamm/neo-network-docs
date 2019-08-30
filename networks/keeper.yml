@@ -2,7 +2,7 @@
   server: zoo.brandoncsammons.com
   desc: this app hold all the animals
   relationships:
-    - exports_to:
+    - fetches_from:
       - cat
-    - imports_from:
+    - sends_to:
       - wolf
