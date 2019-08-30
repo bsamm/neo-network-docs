@@ -11,21 +11,31 @@ require 'neo4j/core/cypher_session/adaptors/http'
 
 class NeoNetworkDocs
   def self.load_data
-
     options = {wrap_level: :proc} # Required to be able to use `Object.property` and `Object.relatedObject
 
     neo4j_adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://neo4j:password@localhost:7474')
     Neo4j::ActiveBase.on_establish_session { Neo4j::Core::CypherSession.new(neo4j_adaptor) }
 
-    query("MATCH (n) DETACH DELETE n")
+    clear_database
+    create_all_nodes
+    create_all_rels
+    p "data loaded successfully"
+  end
 
+  def self.clear_database
+    query("MATCH (n) DETACH DELETE n")
+  end
+
+  def self.node_names
     node_names = []
     data.map { |n| node_names << n[0].keys[0] }
+    node_names
+  end
 
+  def self.create_all_nodes
     data.each do |network|
-
-      network_name = network[0].keys[0]
-      network_data = network[0].values[0]
+      network_name = get_network_name(network)
+      network_data = get_network_data(network)
 
       query("CREATE CONSTRAINT ON (n:#{network_name.camelize}) ASSERT n.uuid IS UNIQUE")
 
@@ -48,27 +58,32 @@ class NeoNetworkDocs
         current_app.assign_attributes(notes: app['notes']) if app['notes'].present?
         current_app.save
       end
+    end
+  end
 
+  def self.create_all_rels
+    data.each do |network|
+      network_data = get_network_data(network)
+    
       network_data.each do |app|
-
-        source_app = node.find_or_create_by!(name: app['name'])
+        source_app = get_network_name(network).camelize.constantize.find_or_create_by!(name: app['name'])
         if app.key?("relationships")
-
+    
           app['relationships'].each do |rel|
-
+    
             rel_name = rel.keys[0]
-
+    
             rel_class = Class.new(Object) do
               include Neo4j::ActiveRel
-
+    
               from_class :any
               to_class :any
-
+    
               type rel_name.upcase
             end
-
+    
             rel.values[0].each do |target_app_name|
-
+    
               node_names.each do |n|
                 begin 
                   target_app = n.camelize.constantize.find_or_initialize_by(name: target_app_name)  
@@ -79,13 +94,13 @@ class NeoNetworkDocs
                 end
                 @target_app = target_app if target_app.created_at.present?
               end
-
+    
               begin
                 custom_class = Object.const_get(rel_name.camelize)
               rescue NameError
                 custom_class = Object.const_set(rel_name.camelize, rel_class)
               end
-
+    
               if rel_name.scan(out_keywords_re).present?
                 custom_class.create(from_node: source_app, to_node: @target_app)
               elsif rel_name.scan(in_keywords_re).present?
@@ -93,16 +108,14 @@ class NeoNetworkDocs
               else
                 p "no keywords match. add in/out keywords to config.yml."
               end
-
+    
             end
-
+    
           end
         end
       end
-
+    
     end
-
-    p "data loaded successfully"
   end
 
   def self.data
@@ -127,5 +140,13 @@ class NeoNetworkDocs
 
   def self.query(cypher_query)
     Neo4j::ActiveBase.current_session.query(cypher_query)
+  end
+
+  def self.get_network_name(network)
+    network[0].keys[0]
+  end
+
+  def self.get_network_data(network)
+    network[0].values[0]
   end
 end

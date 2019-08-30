@@ -6,6 +6,7 @@
     - exports_to:
       - trees
       - flowers
+      - wolf
     - imports_from:
       - flowers
       - dirt
