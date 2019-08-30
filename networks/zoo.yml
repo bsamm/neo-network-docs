@@ -1,7 +1,6 @@
 - name: elephant
   server: zoo.brandoncsammons.com
-  launch_doc: link_to_launch_doc
-  notes: this app hold all the animals
+  desc: this app hold all the animals
   relationships:
     - exports_to:
       - grass
@@ -15,8 +14,7 @@
 
 - name: dog
   server: zoo.brandoncsammons.com
-  launch_doc: link_to_launch_doc
-  notes: this app hold all the animals
+  desc: this app hold all the animals
   relationships:
     - exports_to:
       - bear

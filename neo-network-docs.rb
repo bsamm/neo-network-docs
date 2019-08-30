@@ -39,8 +39,7 @@ class NeoNetworkDocs
 
         property :name, type: String
         property :server, type: String
-        property :launch_doc, type: String
-        property :notes, type: String
+        property :desc, type: String
       end
 
       node = Object.const_set(network_name.camelize, node_class)
@@ -48,8 +47,7 @@ class NeoNetworkDocs
       network_data.each do |app|
         current_app = node.find_or_initialize_by(name: app['name'])
         current_app.assign_attributes(server: app['server']) if app['server'].present?
-        current_app.assign_attributes(launch_doc: app['launch_doc']) if app['launch_doc'].present?
-        current_app.assign_attributes(notes: app['notes']) if app['notes'].present?
+        current_app.assign_attributes(desc: app['desc']) if app['desc'].present?
         current_app.save
       end
     end
