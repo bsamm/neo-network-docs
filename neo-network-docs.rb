@@ -60,7 +60,7 @@ class NeoNetworkDocs
       network_data = get_network_data(network)
     
       network_data.each do |app|
-        source_app = get_network_name(network).camelize.constantize.find_or_create_by!(name: app['name'])
+        source_app = get_node_class(get_network_name(network)).find_or_create_by!(name: app['name'])
         if app.key?("relationships")
     
           app['relationships'].each do |rel|
@@ -80,11 +80,11 @@ class NeoNetworkDocs
     
               node_labels.each do |n|
                 begin 
-                  target_app = n.camelize.constantize.find_or_initialize_by(name: target_app_name)  
+                  target_app = get_node_class(n).find_or_initialize_by(name: target_app_name)  
                 rescue NameError
                   query("CREATE CONSTRAINT ON (n:#{n.camelize}) ASSERT n.uuid IS UNIQUE")
                   node = Object.const_set(n.camelize, node_class)
-                  target_app = n.camelize.constantize.find_or_create_by!(name: target_app_name)  
+                  target_app = get_node_class(n).find_or_create_by!(name: target_app_name)  
                 end
                 @target_app = target_app if target_app.created_at.present?
               end
@@ -148,5 +148,9 @@ class NeoNetworkDocs
 
   def self.get_network_data(network)
     network[0].values[0]
+  end
+
+  def self.get_node_class(node_class_name)
+    node_class_name.camelize.constantize
   end
 end
