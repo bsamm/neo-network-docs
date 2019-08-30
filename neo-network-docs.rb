@@ -78,7 +78,7 @@ class NeoNetworkDocs
     
             rel.values[0].each do |target_app_name|
     
-              node_names.each do |n|
+              node_labels.each do |n|
                 begin 
                   target_app = n.camelize.constantize.find_or_initialize_by(name: target_app_name)  
                 rescue NameError
@@ -136,10 +136,10 @@ class NeoNetworkDocs
     Neo4j::ActiveBase.current_session.query(cypher_query)
   end
 
-  def self.node_names
-    node_names = []
-    data.map { |n| node_names << n[0].keys[0] }
-    node_names
+  def self.node_labels
+    node_labels = []
+    data.map { |n| node_labels << n[0].keys[0] }
+    node_labels
   end
 
   def self.get_network_name(network)
