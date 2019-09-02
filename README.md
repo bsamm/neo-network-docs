@@ -2,6 +2,10 @@
 
 A simple and human-readable way to load your network diagram into neo4j for visualization and analysis.
 
+## Screenshot
+
+![neo-network-docs](https://github.com/bsamm/neo-network-docs/blob/master/screenshots/system.png "Network Image")
+
 ## Setup on macOS
 
 1. Install neo4j: `rake neo4j:install`. This will create the db dir with an instance of neo4j in the project.
