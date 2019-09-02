@@ -1,6 +1,6 @@
 # neo-network-docs
 
-A simple and human-readable way to load your network diagram into neo4j for visualization and analysis.
+A simple and human-readable way to load your network diagram or flowcharts into neo4j for visualization and analysis.
 
 ## Screenshot
 
